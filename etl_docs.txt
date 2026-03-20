@@ -1,0 +1,70 @@
+LOOKUP OPERATOR DOCUMENTATION
+==============================
+
+OVERVIEW:
+The Lookup operator enriches pipeline data by joining with cached or database lookup tables.
+It supports two lookup sources: Dragonfly (in-memory cache) and RDBMS (via JDBC).
+
+EXECUTION MODES:
+- Batch Mode: Processes finite datasets. Cache loaded once at startup.
+- Streaming Mode: Processes continuous data streams. Cache can refresh periodically.
+
+LOOKUP SOURCES:
+
+1. Dragonfly Cache
+   - In-memory key-value store
+   - Maximum cache size: 1,000,000 rows
+   - Best for: Frequently accessed reference data
+   - Supported in: Both Batch and Streaming modes
+
+2. RDBMS (JDBC)
+   - Relational database lookup
+   - Maximum cache size: 100,000 rows
+   - Best for: Less frequently accessed data
+   - Supported in: Both Batch and Streaming modes
+   - Supported databases: PostgreSQL, MySQL, Oracle, SQL Server
+
+CACHE SETTINGS:
+
+Batch Mode:
+- Cache enabled: Yes/No
+- Cache size: 1-100,000 (RDBMS) or 1-1,000,000 (Dragonfly)
+- Refresh policy: OnStartup only
+- TTL: Not supported
+
+Streaming Mode:
+- Cache enabled: Yes/No
+- Cache size: 1-100,000 (RDBMS) or 1-1,000,000 (Dragonfly)
+- Refresh policy: OnStartup, Periodic, or None
+- TTL: Required if cache enabled (in seconds, 60-86400)
+
+JOIN CONDITIONS:
+- At least one join condition is mandatory
+- Supported operators: = (equals), > (greater than), < (less than), >= (greater or equal), <= (less or equal)
+- Multiple conditions combined with AND logic
+
+OUTPUT MAPPING:
+- SelectedFields: Choose specific fields to add to output
+- AllFields: Add all lookup table fields to output
+
+ERROR HANDLING:
+- OnNoMatch - DropRow: Remove records with no lookup match
+- OnNoMatch - UseDefaults: Use default values for missing lookups
+- OnNoMatch - FailPipeline: Stop pipeline execution on no match
+
+CONFIGURATION RULES:
+1. executionMode must be either "Batch" or "Streaming"
+2. lookupSource.type must be "Dragonfly" or "RDBMS"
+3. joinConditions array must have at least 1 element
+4. In Batch mode: refreshPolicy must be "OnStartup", TTL not allowed
+5. In Streaming mode: If cache enabled, TTL is mandatory
+6. Cache size must not exceed maximums (Dragonfly: 1M, RDBMS: 100K)
+7. connectionId and tableName are mandatory
+8. All sourceField and lookupField references must exist in schemas
+
+BEST PRACTICES:
+- Use Dragonfly for small, frequently accessed reference data
+- Use RDBMS for larger, less frequently accessed data
+- Set cache size based on expected lookup table size
+- In streaming, set TTL based on data freshness requirements
+- Use SelectedFields output mapping to avoid schema bloat
