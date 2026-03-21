@@ -1,14 +1,6 @@
-1. Query: "Can I use TTL in batch mode?"
-   Expected: No. TTL is not supported in Batch mode.
+Query: Can I use TTL in batch mode?
+Expected Output: Assistant:
+Actual Assistant Output:
+No, TTL is not supported in Batch mode. According to the CACHE SETTINGS, in Batch Mode, "TTL: Not supported". Additionally, CONFIGURATION RULES state that "In Batch mode: refreshPolicy must be 'OnStartup', TTL not allowed".
+==================================================
 
-2. Query: "What's the maximum cache size for Dragonfly?"
-   Expected: 1,000,000 rows.
-
-3. Query: "What's the difference between Dragonfly and RDBMS lookup?"
-   Expected: Dragonfly is in-memory and supports up to 1,000,000 rows; RDBMS uses JDBC and supports up to 100,000 rows.
-
-4. Query: "Create a lookup config for streaming mode using MySQL to lookup customer names"
-   Expected: Valid JSON config with executionMode = Streaming, lookupSource.type = RDBMS, a join condition, cache enabled, TTL set, and MySQL connection/table details.
-
-5. Query: "Is this config valid? {"operatorType":"Lookup","executionMode":"Batch","lookupSource":{"type":"Dragonfly","connectionId":"c1","tableName":"customers"},"joinConditions":[{"sourceField":"customer_id","lookupField":"customer_id","operator":"="}],"cacheSettings":{"enabled":true,"size":1000,"ttl":300,"refreshPolicy":"OnStartup"},"outputMapping":{"mode":"SelectedFields","fields":["customer_name"]},"errorHandling":{"onNoMatch":"DropRow"}}"
-   Expected: Invalid. TTL is not supported in Batch mode.

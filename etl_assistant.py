@@ -19,7 +19,7 @@ from langgraph.checkpoint.memory import MemorySaver
 load_dotenv()
 
 # ------------------------------------------------------------------
-# 1. Define the Agent State (Now with Memory)
+# 1. Define the Agent State
 # ------------------------------------------------------------------
 class AgentState(TypedDict):
     question: str
@@ -171,7 +171,7 @@ class ETLAssistantAgent:
         print("\n--- Execution Trace ---")
         for output in self.app.stream(inputs, config=config):
             for node_name, state_update in output.items():
-                print(f"✅ Node Executed: [{node_name}]")
+                print(f"Node Executed: [{node_name}]")
                 if "generation" in state_update:
                     final_generation = state_update["generation"]
         print("-----------------------\n")
